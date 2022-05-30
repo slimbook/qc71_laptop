@@ -101,6 +101,7 @@
 #define FAN_CTRL_TURBO        BIT(4)
 #define FAN_CTRL_AUTO         BIT(5)
 #define FAN_CTRL_FAN_BOOST    BIT(6)
+#define FAN_CTRL_SB_FAN_TURBO BIT(7)
 
 #define FAN_RPM_1_ADDR ADDR(0x04, 0x64)
 #define FAN_RPM_2_ADDR ADDR(0x04, 0x6C)

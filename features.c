@@ -35,6 +35,13 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 			{ }
 		}
 	},
+	{
+		/* Slimbook PROX15 AMD */
+		.matches = {
+			DMI_MATCH(DMI_BOARD_NAME, "PROX15-AMD"),
+			{ }
+		}
+	},
 	{ }
 };
 
@@ -156,6 +163,15 @@ static int __init check_features_bios(void)
 	}
 
 	pr_info("BIOS version: %04d\n", bios_version);
+	
+	if (bios_version == 1) {
+		const char *s = read_oem_string(11);
+		
+		if (strcmp(s,"PF5NU1G") == 0) {
+			qc71_features.fn_lock      = true;
+			qc71_features.sb_fan_turbo = true;
+		}
+	}
 
 	if (bios_version >= 114) {
 		const char *s = read_oem_string(18);

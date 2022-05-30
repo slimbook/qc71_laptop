@@ -12,6 +12,7 @@ struct qc71_features_struct {
 	bool fn_lock           : 1;
 	bool batt_charge_limit : 1;
 	bool fan_extras        : 1; /* duty cycle reduction, always on mode */
+	bool sb_fan_turbo      : 1; /* Slimbook turbo mode: increases fan rpm limit and tdp */
 };
 
 /* ========================================================================== */
