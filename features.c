@@ -38,8 +38,15 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 	{
 		/* Slimbook PROX15 AMD */
 		.matches = {
-			DMI_MATCH(DMI_BOARD_NAME, "PROX15-AMD"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "PROX15-AMD"),
 			{ }
+		}
+	},
+	{
+		/* Slimbook PROX AMD5 */
+		.matches = {
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,"PROX-AMD5"),
+			{}
 		}
 	},
 	{ }
@@ -169,7 +176,11 @@ static int __init check_features_bios(void)
 		
 		if (strcmp(s,"PF5NU1G") == 0) {
 			qc71_features.fn_lock      = true;
-			qc71_features.sb_fan_turbo = true;
+			qc71_features.silent_mode  = true;
+		}
+		else if (strcmp(s,"PF4LUXF") == 0) {
+			qc71_features.fn_lock      = true;
+			qc71_features.silent_mode  = true;
 		}
 	}
 

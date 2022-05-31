@@ -250,7 +250,7 @@ static ssize_t fan_boost_store(struct device *dev, struct device_attribute *attr
 	return count;
 }
 
-static ssize_t sb_fan_turbo_show(struct device *dev,
+static ssize_t silent_mode_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
 	int status = ec_read_byte(FAN_CTRL_ADDR);
@@ -258,10 +258,10 @@ static ssize_t sb_fan_turbo_show(struct device *dev,
 	if (status < 0)
 		return status;
 
-	return sprintf(buf, "%d\n", !!(status & FAN_CTRL_SB_FAN_TURBO));
+	return sprintf(buf, "%d\n", !!(status & FAN_CTRL_SILENT_MODE));
 }
 
-static ssize_t sb_fan_turbo_store(struct device *dev, struct device_attribute *attr,
+static ssize_t silent_mode_store(struct device *dev, struct device_attribute *attr,
 				    const char *buf, size_t count)
 {
 	int status;
@@ -274,7 +274,7 @@ static ssize_t sb_fan_turbo_store(struct device *dev, struct device_attribute *a
 	if (status < 0)
 		return status;
 
-	status = SET_BIT(status, FAN_CTRL_SB_FAN_TURBO, value);
+	status = SET_BIT(status, FAN_CTRL_SILENT_MODE, value);
 
 	status = ec_write_byte(FAN_CTRL_ADDR, status);
 
@@ -293,7 +293,7 @@ static DEVICE_ATTR_RW(fan_reduced_duty_cycle);
 static DEVICE_ATTR_RW(manual_control);
 static DEVICE_ATTR_RW(super_key_lock);
 static DEVICE_ATTR_RW(fan_boost);
-static DEVICE_ATTR_RW(sb_fan_turbo);
+static DEVICE_ATTR_RW(silent_mode);
 
 static struct attribute *qc71_laptop_attrs[] = {
 	&dev_attr_fn_lock.attr,
@@ -303,7 +303,7 @@ static struct attribute *qc71_laptop_attrs[] = {
 	&dev_attr_manual_control.attr,
 	&dev_attr_super_key_lock.attr,
 	&dev_attr_fan_boost.attr,
-	&dev_attr_sb_fan_turbo.attr,
+	&dev_attr_silent_mode.attr,
 	NULL
 };
 
@@ -323,8 +323,8 @@ static umode_t qc71_laptop_attr_is_visible(struct kobject *kobj, struct attribut
 		ok = qc71_features.super_key_lock;
 	else if (attr == &dev_attr_fan_boost.attr)
 		ok = qc71_features.fan_boost;
-	else if (attr == &dev_attr_sb_fan_turbo.attr)
-		ok = qc71_features.sb_fan_turbo;
+	else if (attr == &dev_attr_silent_mode.attr)
+		ok = qc71_features.silent_mode;
 		
 	return ok ? attr->mode : 0;
 }
