@@ -36,6 +36,13 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 		}
 	},
 	{
+		/* Slimbook PROX AMD */
+		.matches = {
+			DMI_MATCH(DMI_PRODUCT_NAME, "PROX-AMD"),
+			{ }
+		}
+	},
+	{
 		/* Slimbook PROX15 AMD */
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "PROX15-AMD"),
@@ -46,6 +53,13 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 		/* Slimbook PROX AMD5 */
 		.matches = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,"PROX-AMD5"),
+			{}
+		}
+	},
+	{
+		/* Slimbook PROX15 AMD5 */
+		.matches = {
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,"PROX15-AMD5"),
 			{}
 		}
 	},
