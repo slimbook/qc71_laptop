@@ -20,6 +20,14 @@ struct oem_string_walker_data {
 
 /* ========================================================================== */
 
+static int __init slimbook_dmi_cb(const struct dmi_system_id *id)
+{
+	qc71_features.fn_lock      = true;
+	qc71_features.silent_mode  = true;
+
+	return 1;
+}
+
 static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 	{
 		.matches = {
@@ -37,6 +45,7 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 	},
 	{
 		/* Slimbook PROX AMD */
+		.callback = slimbook_dmi_cb,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "PROX-AMD"),
 			{ }
@@ -44,6 +53,7 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 	},
 	{
 		/* Slimbook PROX15 AMD */
+		.callback = slimbook_dmi_cb,
 		.matches = {
 			DMI_MATCH(DMI_PRODUCT_NAME, "PROX15-AMD"),
 			{ }
@@ -51,16 +61,18 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 	},
 	{
 		/* Slimbook PROX AMD5 */
+		.callback = slimbook_dmi_cb,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,"PROX-AMD5"),
-			{}
+			{ }
 		}
 	},
 	{
 		/* Slimbook PROX15 AMD5 */
+		.callback = slimbook_dmi_cb,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME,"PROX15-AMD5"),
-			{}
+			{ }
 		}
 	},
 	{ }
@@ -184,19 +196,6 @@ static int __init check_features_bios(void)
 	}
 
 	pr_info("BIOS version: %04d\n", bios_version);
-	
-	if (bios_version == 1) {
-		const char *s = read_oem_string(11);
-		
-		if (strcmp(s,"PF5NU1G") == 0) {
-			qc71_features.fn_lock      = true;
-			qc71_features.silent_mode  = true;
-		}
-		else if (strcmp(s,"PF4LUXF") == 0) {
-			qc71_features.fn_lock      = true;
-			qc71_features.silent_mode  = true;
-		}
-	}
 
 	if (bios_version >= 114) {
 		const char *s = read_oem_string(18);
