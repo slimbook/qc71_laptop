@@ -47,7 +47,7 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 		/* Slimbook PROX AMD */
 		.callback = slimbook_dmi_cb,
 		.matches = {
-			DMI_MATCH(DMI_PRODUCT_NAME, "PROX-AMD"),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "PROX-AMD"),
 			{ }
 		}
 	},
@@ -55,7 +55,7 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 		/* Slimbook PROX15 AMD */
 		.callback = slimbook_dmi_cb,
 		.matches = {
-			DMI_MATCH(DMI_PRODUCT_NAME, "PROX15-AMD"),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "PROX15-AMD"),
 			{ }
 		}
 	},
