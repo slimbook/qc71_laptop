@@ -105,13 +105,10 @@ static void emit_keyboard_led_hw_changed(void)
 		suffix = led->name + name_length - strlen(KBD_BL_LED_SUFFIX);
 
 		if (strcmp(suffix, KBD_BL_LED_SUFFIX) == 0) {
-			int s;
-
 			if (mutex_lock_interruptible(&led->led_access))
 				break;
 
-			s = led_update_brightness(led);
-			if (s >= 0)
+			if (led_update_brightness(led) >= 0)
 				led_classdev_notify_brightness_hw_changed(led, led->brightness);
 
 			mutex_unlock(&led->led_access);
@@ -391,11 +388,12 @@ void qc71_wmi_events_cleanup(void)
 {
 	int i;
 
-	for (i = 0; i < ARRAY_SIZE(qc71_wmi_event_guids); i++)
+	for (i = 0; i < ARRAY_SIZE(qc71_wmi_event_guids); i++) {
 		if (qc71_wmi_event_guids[i].handler_installed) {
 			wmi_remove_notify_handler(qc71_wmi_event_guids[i].guid);
 			qc71_wmi_event_guids[i].handler_installed = false;
 		}
+	}
 
 	if (qc71_input_dev)
 		input_unregister_device(qc71_input_dev);
