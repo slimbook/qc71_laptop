@@ -6,6 +6,7 @@
 #include <linux/types.h>
 #include <uapi/asm-generic/errno-base.h>
 
+#include "hwmon.h"
 #include "hwmon_fan.h"
 #include "hwmon_pwm.h"
 
