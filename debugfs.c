@@ -213,18 +213,15 @@ int __init qc71_debugfs_setup(void)
 		return -ENODEV;
 
 	qc71_debugfs_dir = debugfs_create_dir(DEBUGFS_DIR_NAME, NULL);
-
 	if (IS_ERR(qc71_debugfs_dir)) {
 		err = PTR_ERR(qc71_debugfs_dir);
-		goto out;
+		goto out_error;
 	}
 
 	qc71_debugfs_regs_dir = debugfs_create_dir("regs", qc71_debugfs_dir);
-
 	if (IS_ERR(qc71_debugfs_regs_dir)) {
 		err = PTR_ERR(qc71_debugfs_regs_dir);
-		debugfs_remove_recursive(qc71_debugfs_dir);
-		goto out;
+		goto out_error_remove_dir;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(qc71_debugfs_attrs); i++) {
@@ -232,17 +229,19 @@ int __init qc71_debugfs_setup(void)
 
 		d = debugfs_create_file(attr->name, 0600, qc71_debugfs_regs_dir,
 					(void *) attr, &qc71_debugfs_fops);
-
 		if (IS_ERR(d)) {
 			err = PTR_ERR(d);
-			debugfs_remove_recursive(qc71_debugfs_dir);
-			goto out;
+			goto out_error_remove_dir;
 		}
 	}
 
 	debugfs_create_file_size("ec", 0600, qc71_debugfs_dir, NULL, &qc71_debugfs_ec_fops, U16_MAX);
 
-out:
+	return 0;
+
+out_error_remove_dir:
+	debugfs_remove_recursive(qc71_debugfs_dir);
+out_error:
 	return err;
 }
 
