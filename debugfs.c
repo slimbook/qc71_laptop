@@ -240,12 +240,7 @@ int __init qc71_debugfs_setup(void)
 		}
 	}
 
-	d = debugfs_create_file("ec", 0600, qc71_debugfs_dir, NULL, &qc71_debugfs_ec_fops);
-	if (IS_ERR(d)) {
-		err = PTR_ERR(d);
-		debugfs_remove_recursive(qc71_debugfs_dir);
-		goto out;
-	}
+	debugfs_create_file_size("ec", 0600, qc71_debugfs_dir, NULL, &qc71_debugfs_ec_fops, U16_MAX);
 
 out:
 	return err;
