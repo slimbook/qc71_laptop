@@ -14,7 +14,6 @@
 #include "features.h"
 #include "hwmon_pwm.h"
 #include "pdev.h"
-#include "util.h"
 
 /* ========================================================================== */
 
