@@ -9,6 +9,7 @@
 #include <linux/input/sparse-keymap.h>
 #include <linux/leds.h>
 
+#include "events.h"
 #include "misc.h"
 #include "pdev.h"
 #include "wmi.h"
