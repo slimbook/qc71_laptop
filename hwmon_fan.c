@@ -11,6 +11,7 @@
 #include "ec.h"
 #include "fan.h"
 #include "features.h"
+#include "hwmon_fan.h"
 #include "pdev.h"
 
 /* ========================================================================== */
