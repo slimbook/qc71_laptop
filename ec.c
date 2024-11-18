@@ -17,16 +17,6 @@ static DECLARE_RWSEM(ec_lock);
 
 /* ========================================================================== */
 
-int __must_check qc71_ec_lock(void)
-{
-	return down_write_killable(&ec_lock);
-}
-
-void qc71_ec_unlock(void)
-{
-	up_write(&ec_lock);
-}
-
 int __must_check qc71_ec_transaction(uint16_t addr, uint16_t data,
 				     union qc71_ec_result *result, bool read)
 {
