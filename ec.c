@@ -43,7 +43,7 @@ int __must_check qc71_ec_transaction(uint16_t addr, uint16_t data,
 	static_assert(ARRAY_SIZE(buf) == 8);
 
 	/* the returned ACPI_TYPE_BUFFER is 40 bytes long for some reason ... */
-	uint8_t output_buf[sizeof(union acpi_object) + 40];
+	uint8_t output_buf[sizeof(union acpi_object) + 40] = {0};
 
 	struct acpi_buffer input = { sizeof(buf), buf },
 			   output = { sizeof(output_buf), output_buf };
@@ -56,8 +56,6 @@ int __must_check qc71_ec_transaction(uint16_t addr, uint16_t data,
 
 	if (err)
 		goto out;
-
-	memset(output_buf, 0, sizeof(output_buf));
 
 	status = wmi_evaluate_method(QC71_WMI_WMBC_GUID, 0,
 				     QC71_WMBC_GETSETULONG_ID, &input, &output);
