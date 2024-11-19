@@ -8,6 +8,7 @@
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
 #include <linux/leds.h>
+#include <linux/version.h>
 
 #include "events.h"
 #include "misc.h"
@@ -24,9 +25,9 @@ static struct {
 	const char *guid;
 	bool handler_installed;
 } qc71_wmi_event_guids[] = {
-	{ .guid = QC71_WMI_EVENT0_GUID },
-	{ .guid = QC71_WMI_EVENT1_GUID },
-	{ .guid = QC71_WMI_EVENT2_GUID },
+	{ .guid = QC71_WMI_EVENT_70_GUID },
+	{ .guid = QC71_WMI_EVENT_71_GUID },
+	{ .guid = QC71_WMI_EVENT_72_GUID },
 };
 
 static const struct key_entry qc71_wmi_hotkeys[] = {
@@ -123,11 +124,11 @@ static inline emit_keyboard_led_hw_changed(void)
 { }
 #endif
 
-static void qc71_wmi_event_d2_handler(union acpi_object *obj)
+static void process_event_72(const union acpi_object *obj)
 {
 	bool do_report = true;
 
-	if (!obj || obj->type != ACPI_TYPE_INTEGER)
+	if (obj->type != ACPI_TYPE_INTEGER)
 		return;
 
 	switch (obj->integer.value) {
@@ -280,49 +281,48 @@ static void qc71_wmi_event_d2_handler(union acpi_object *obj)
 
 }
 
+static void process_event(const union acpi_object *obj, const char *guid)
+{
+	pr_info("guid=%s obj=%p\n", guid, obj);
+
+	if (!obj)
+		return;
+
+	pr_info("obj->type = %d\n", (int) obj->type);
+	if (obj->type == ACPI_TYPE_INTEGER) {
+		pr_info("int = %u\n", (unsigned int) obj->integer.value);
+	} else if (obj->type == ACPI_TYPE_STRING) {
+		pr_info("string = '%s'\n", obj->string.pointer);
+	} else if (obj->type == ACPI_TYPE_BUFFER) {
+		pr_info("buffer = %u %*ph", obj->buffer.length,
+			(int) obj->buffer.length, (void *) obj->buffer.pointer);
+	}
+
+	if (strcmp(guid, QC71_WMI_EVENT_72_GUID) == 0)
+		process_event_72(obj);
+}
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
+static void qc71_wmi_event_handler(union acpi_object *obj, void *context)
+{
+	process_event(obj, context);
+}
+#else
 static void qc71_wmi_event_handler(u32 value, void *context)
 {
 	struct acpi_buffer response = { ACPI_ALLOCATE_BUFFER, NULL };
-	union acpi_object *obj;
 	acpi_status status;
 
-	pr_info("%s(value=%#04x)\n", __func__, (unsigned int) value);
 	status = wmi_get_event_data(value, &response);
-
 	if (ACPI_FAILURE(status)) {
 		pr_err("bad WMI event status: %#010x\n", (unsigned int) status);
 		return;
 	}
 
-	obj = response.pointer;
-
-	if (obj) {
-		pr_info("obj->type = %d\n", (int) obj->type);
-		if (obj->type == ACPI_TYPE_INTEGER) {
-			pr_info("int = %u\n", (unsigned int) obj->integer.value);
-		} else if (obj->type == ACPI_TYPE_STRING) {
-			pr_info("string = '%s'\n", obj->string.pointer);
-		} else if (obj->type == ACPI_TYPE_BUFFER) {
-			uint32_t i;
-
-			for (i = 0; i < obj->buffer.length; i++)
-				pr_info("buf[%u] = %#04x\n",
-					(unsigned int) i,
-					(unsigned int) obj->buffer.pointer[i]);
-		}
-	}
-
-	switch (value) {
-	case 0xd2:
-		qc71_wmi_event_d2_handler(obj);
-		break;
-	case 0xd1:
-	case 0xd0:
-		break;
-	}
-
-	kfree(obj);
+	process_event(response.pointer, context);
+	kfree(response.pointer);
 }
+#endif
 
 static int __init setup_input_dev(void)
 {
@@ -371,7 +371,7 @@ int __init qc71_wmi_events_setup(void)
 	for (i = 0; i < ARRAY_SIZE(qc71_wmi_event_guids); i++) {
 		const char *guid = qc71_wmi_event_guids[i].guid;
 		acpi_status status =
-			wmi_install_notify_handler(guid, qc71_wmi_event_handler, NULL);
+			wmi_install_notify_handler(guid, qc71_wmi_event_handler, (void *) guid);
 
 		if (ACPI_FAILURE(status)) {
 			pr_warn("could not install WMI notify handler for '%s': [%#010lx] %s\n",
