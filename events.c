@@ -118,6 +118,9 @@ static void emit_keyboard_led_hw_changed(void)
 
 	up_read(&leds_list_lock);
 }
+#else
+static inline emit_keyboard_led_hw_changed(void)
+{ }
 #endif
 
 static void qc71_wmi_event_d2_handler(union acpi_object *obj)
@@ -263,10 +266,7 @@ static void qc71_wmi_event_d2_handler(union acpi_object *obj)
 	/* keyboard backlight brightness changed */
 	case 240:
 		pr_info("keyboard backlight changed\n");
-
-#if IS_ENABLED(CONFIG_LEDS_BRIGHTNESS_HW_CHANGED)
 		emit_keyboard_led_hw_changed();
-#endif
 		break;
 
 	default:
