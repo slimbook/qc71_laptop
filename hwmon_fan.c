@@ -135,16 +135,14 @@ static const struct hwmon_chip_info qc71_hwmon_fan_chip_info = {
 
 int __init qc71_hwmon_fan_setup(void)
 {
-	int err = 0;
-
 	qc71_hwmon_fan_dev = hwmon_device_register_with_info(
 		&qc71_platform_dev->dev, KBUILD_MODNAME ".hwmon.fan", NULL,
 		&qc71_hwmon_fan_chip_info, NULL);
 
 	if (IS_ERR(qc71_hwmon_fan_dev))
-		err = PTR_ERR(qc71_hwmon_fan_dev);
+		return PTR_ERR(qc71_hwmon_fan_dev);
 
-	return err;
+	return 0;
 }
 
 void qc71_hwmon_fan_cleanup(void)
