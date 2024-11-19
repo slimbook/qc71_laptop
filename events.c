@@ -59,7 +59,6 @@ static const struct key_entry qc71_wmi_hotkeys[] = {
 	{ KE_KEY,    0xb8, { KEY_FN_ESC }},
 
 	{ KE_END }
-
 };
 
 /* ========================================================================== */
