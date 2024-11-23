@@ -12,8 +12,8 @@
 
 #include "fan.h"
 #include "features.h"
+#include "hwmon_pwm.h"
 #include "pdev.h"
-#include "util.h"
 
 /* ========================================================================== */
 
@@ -104,8 +104,6 @@ static const struct hwmon_chip_info qc71_hwmon_pwm_chip_info = {
 
 int __init qc71_hwmon_pwm_setup(void)
 {
-	int err = 0;
-
 	if (!qc71_features.fan_boost)
 		return -ENODEV;
 
@@ -114,9 +112,9 @@ int __init qc71_hwmon_pwm_setup(void)
 		&qc71_hwmon_pwm_chip_info, NULL);
 
 	if (IS_ERR(qc71_hwmon_pwm_dev))
-		err = PTR_ERR(qc71_hwmon_pwm_dev);
+		return PTR_ERR(qc71_hwmon_pwm_dev);
 
-	return err;
+	return 0;
 }
 
 void qc71_hwmon_pwm_cleanup(void)

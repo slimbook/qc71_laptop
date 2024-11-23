@@ -10,6 +10,7 @@
 #include <linux/types.h>
 #include <linux/version.h>
 
+#include "battery.h"
 #include "ec.h"
 #include "features.h"
 

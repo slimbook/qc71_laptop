@@ -468,10 +468,8 @@ int __init qc71_pdev_setup(void)
 	int err;
 
 	qc71_platform_dev = platform_device_alloc(KBUILD_MODNAME, PLATFORM_DEVID_NONE);
-	if (!qc71_platform_dev) {
-		err = -ENOMEM;
-		goto out;
-	}
+	if (!qc71_platform_dev)
+		return -ENOMEM;
 
 	qc71_platform_dev->dev.groups = qc71_laptop_groups;
 
@@ -481,7 +479,6 @@ int __init qc71_pdev_setup(void)
 		qc71_platform_dev = NULL;
 	}
 
-out:
 	return err;
 }
 
