@@ -9,6 +9,8 @@
 #define SLB_MODEL_PROX                  0x0200
 #define SLB_MODEL_TITAN                 0x0400
 #define SLB_MODEL_HERO                  0x0800
+#define SLB_MODEL_EVO                 0x010000
+#define SLB_MODEL_CREATIVE            0x020000
 
 struct qc71_features_struct {
 	bool super_key_lock    : 1;

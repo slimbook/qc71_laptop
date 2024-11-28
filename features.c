@@ -57,6 +57,24 @@ static int __init slimbook_hero_dmi_cb(const struct dmi_system_id *id)
 	return 1;
 }
 
+static int __init slimbook_evo_dmi_cb(const struct dmi_system_id *id)
+{
+	qc71_features.silent_mode       = true;
+	qc71_features.turbo_mode        = true;
+	qc71_model = SLB_MODEL_EVO;
+
+	return 1;
+}
+
+static int __init slimbook_creative_dmi_cb(const struct dmi_system_id *id)
+{
+	qc71_features.silent_mode       = true;
+	qc71_features.turbo_mode        = true;
+	qc71_model = SLB_MODEL_CREATIVE;
+
+	return 1;
+}
+
 static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 	{
 		.matches = {
@@ -140,6 +158,24 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 		.callback = slimbook_hero_dmi_cb,
 		.matches = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "HERO-RPL-RTX"),
+			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "SLIMBOOK"),
+			{ }
+		}
+	},
+	{
+		/* Slimbook EVO A8 */
+		.callback = slimbook_evo_dmi_cb,
+		.matches = {
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "EVO14-A8"),
+			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "SLIMBOOK"),
+			{ }
+		}
+	},
+		{
+		/* Slimbook Creative */
+		.callback = slimbook_creative_dmi_cb,
+		.matches = {
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "EVO14-A8"),
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "SLIMBOOK"),
 			{ }
 		}
