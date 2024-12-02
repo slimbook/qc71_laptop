@@ -175,7 +175,7 @@ static const struct dmi_system_id qc71_dmi_table[] __initconst = {
 		/* Slimbook Creative */
 		.callback = slimbook_creative_dmi_cb,
 		.matches = {
-			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "EVO14-A8"),
+			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "CREA15-A8-RTX"),
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "SLIMBOOK"),
 			{ }
 		}

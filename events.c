@@ -57,6 +57,7 @@ static const struct key_entry qc71_wmi_hotkeys[] = {
 	 */
 	{ KE_KEY,    0xa4, { KEY_RFKILL }},
 	{ KE_KEY,    0xa5, { KEY_FN_F2 }},
+	{ KE_KEY,    0xb0, { KEY_FN_F5 }},
 	{ KE_KEY,    0xb1, { KEY_KBDILLUMDOWN }},
 	{ KE_KEY,    0xb2, { KEY_KBDILLUMUP }},
 	{ KE_KEY,    0xb8, { KEY_FN_ESC }},
