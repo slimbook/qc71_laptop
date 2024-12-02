@@ -15,6 +15,7 @@
 #include "pdev.h"
 #include "wmi.h"
 #include "features.h"
+#include "ec.h"
 
 /* ========================================================================== */
 
@@ -60,9 +61,10 @@ static const struct key_entry qc71_wmi_hotkeys[] = {
 	{ KE_KEY,    0xb0, { KEY_FN_F5 }},
 	{ KE_KEY,    0xb1, { KEY_KBDILLUMDOWN }},
 	{ KE_KEY,    0xb2, { KEY_KBDILLUMUP }},
+	{ KE_KEY,    0xb3, { KEY_KBDILLUMTOGGLE }},
 	{ KE_KEY,    0xb8, { KEY_FN_ESC }},
 	{ KE_KEY,    0xbc, { KEY_FN_F5 }},
-
+	{ KE_KEY,    0xcf, { KEY_FN_F12 }},
 	{ KE_END }
 };
 
@@ -127,6 +129,37 @@ static void emit_keyboard_led_hw_changed(void)
 static inline emit_keyboard_led_hw_changed(void)
 { }
 #endif
+
+static void change_performance(void)
+{
+	int status, performance_bits, current_value, next_value;
+
+	status = ec_read_byte(FAN_CTRL_ADDR);
+
+	if (status<0)
+		return;
+
+	pr_info("perfomance state:%x\n",status);
+
+	performance_bits = FAN_CTRL_SILENT_MODE | FAN_CTRL_TURBO;
+	current_value = status & performance_bits;
+	next_value = status & ~performance_bits;
+
+	switch (current_value) {
+		case 0:
+			next_value = next_value | FAN_CTRL_AUTO | FAN_CTRL_TURBO;
+			break;
+		case FAN_CTRL_SILENT_MODE:
+			next_value = next_value | FAN_CTRL_AUTO;
+			break;
+		case FAN_CTRL_TURBO:
+			next_value = next_value | FAN_CTRL_AUTO | FAN_CTRL_SILENT_MODE;
+			break;
+	}
+
+	pr_info("changing to:%x\n",next_value);
+	ec_write_byte(FAN_CTRL_ADDR, next_value);
+}
 
 static void process_event_72(const union acpi_object *obj)
 {
@@ -212,6 +245,21 @@ static void process_event_72(const union acpi_object *obj)
 		pr_debug("lightbar off\n");
 		break;
 
+	case 0x3b:
+		do_report = false;
+		pr_debug("backlight off\n");
+		break;
+
+	case 0x3d:
+		do_report = false;
+		pr_debug("backlight half\n");
+		break;
+
+	case 0x3f:
+		do_report = false;
+		pr_debug("backlight full\n");
+		break;
+
 	/* enable super key (win key) lock */
 	case 0x40:
 		do_report = false;
@@ -257,7 +305,12 @@ static void process_event_72(const union acpi_object *obj)
 	case 0xb0:
 		do_report = false;
 		pr_info("change perf mode\n");
-		/* TODO: should it be handled here? */
+
+		if (qc71_model == SLB_MODEL_EVO ||
+			qc71_model == SLB_MODEL_CREATIVE) {
+			do_report = true;
+			change_performance();
+		}
 		break;
 
 	/* increase keyboard backlight */
@@ -270,6 +323,10 @@ static void process_event_72(const union acpi_object *obj)
 	case 0xb2:
 		pr_debug("keyboard backlight increase\n");
 		/* TODO: should it be handled here? */
+		break;
+
+	/* keyboard backlight cycle */
+	case 0xb3:
 		break;
 
 	/* toggle Fn lock (Fn+ESC)*/
@@ -293,6 +350,11 @@ static void process_event_72(const union acpi_object *obj)
 		if (qc71_model == SLB_MODEL_HERO || qc71_model == SLB_MODEL_TITAN) {
 			sysfs_notify(&qc71_platform_dev->dev.kobj, NULL, "turbo_mode");
 		}
+		break;
+
+	/* webcam toggle on/off */
+	case 0xcf:
+
 		break;
 
 	/* keyboard backlight brightness changed */
