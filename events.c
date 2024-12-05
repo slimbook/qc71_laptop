@@ -133,13 +133,14 @@ static inline emit_keyboard_led_hw_changed(void)
 static void change_performance(void)
 {
 	int status, performance_bits, current_value, next_value;
+	char profile[32];
 
 	status = ec_read_byte(FAN_CTRL_ADDR);
 
 	if (status<0)
 		return;
 
-	pr_info("perfomance state:%x\n",status);
+	pr_debug("current profile:%x\n",status);
 
 	performance_bits = FAN_CTRL_SILENT_MODE | FAN_CTRL_TURBO;
 	current_value = status & performance_bits;
@@ -148,16 +149,25 @@ static void change_performance(void)
 	switch (current_value) {
 		case 0:
 			next_value = next_value | FAN_CTRL_AUTO | FAN_CTRL_TURBO;
+			sprintf(profile,"perfomance");
 			break;
+
 		case FAN_CTRL_SILENT_MODE:
 			next_value = next_value | FAN_CTRL_AUTO;
+			sprintf(profile,"balanced");
 			break;
+
 		case FAN_CTRL_TURBO:
 			next_value = next_value | FAN_CTRL_AUTO | FAN_CTRL_SILENT_MODE;
+			sprintf(profile,"energy-saver");
 			break;
+
+		default:
+			next_value = next_value | FAN_CTRL_AUTO;
+			sprintf(profile,"balanced");
 	}
 
-	pr_info("changing to:%x\n",next_value);
+	pr_info("Setting profile to: %s\n",profile);
 	ec_write_byte(FAN_CTRL_ADDR, next_value);
 }
 
