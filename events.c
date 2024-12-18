@@ -387,18 +387,18 @@ static void process_event_72(const union acpi_object *obj)
 
 static void process_event(const union acpi_object *obj, const char *guid)
 {
-	pr_info("guid=%s obj=%p\n", guid, obj);
+	pr_debug("guid=%s obj=%p\n", guid, obj);
 
 	if (!obj)
 		return;
 
-	pr_info("obj->type = %d\n", (int) obj->type);
+	pr_debug("obj->type = %d\n", (int) obj->type);
 	if (obj->type == ACPI_TYPE_INTEGER) {
-		pr_info("int = %u\n", (unsigned int) obj->integer.value);
+		pr_debug("int = %u\n", (unsigned int) obj->integer.value);
 	} else if (obj->type == ACPI_TYPE_STRING) {
-		pr_info("string = '%s'\n", obj->string.pointer);
+		pr_debug("string = '%s'\n", obj->string.pointer);
 	} else if (obj->type == ACPI_TYPE_BUFFER) {
-		pr_info("buffer = %u %*ph", obj->buffer.length,
+		pr_debug("buffer = %u %*ph", obj->buffer.length,
 			(int) obj->buffer.length, (void *) obj->buffer.pointer);
 	}
 
