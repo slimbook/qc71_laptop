@@ -70,6 +70,7 @@ static int __init slimbook_creative_dmi_cb(const struct dmi_system_id *id)
 {
 	qc71_features.silent_mode       = true;
 	qc71_features.turbo_mode        = true;
+	qc71_features.kbd_backlight_rgb = true;
 	qc71_model = SLB_MODEL_CREATIVE;
 
 	return 1;
